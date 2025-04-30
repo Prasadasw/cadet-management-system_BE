@@ -142,3 +142,22 @@ exports.getCadetByChestNumber = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
+
+exports.getCadetsByBattalion = async (req, res) => {
+  try {
+    const { battalionId } = req.params;
+    
+    const cadets = await Cadet.findAll({
+      where: { battalionId },
+      order: [['chestNumber', 'ASC']]
+    });
+    
+    res.status(200).json({ 
+      message: 'Cadets retrieved successfully', 
+      data: cadets 
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};

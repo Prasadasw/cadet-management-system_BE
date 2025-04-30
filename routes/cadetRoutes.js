@@ -8,6 +8,9 @@ router.post('/create', cadetController.createCadet);
 // Get all cadets
 router.get('/', cadetController.getAllCadets);
 
+// Get cadets by battalion
+router.get('/battalion/:battalionId', cadetController.getCadetsByBattalion);
+
 // Get cadet by ID
 router.get('/:id', cadetController.getCadet);
 
