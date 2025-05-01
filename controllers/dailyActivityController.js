@@ -168,4 +168,67 @@ exports.getAttendanceReport = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
+};
+
+// Get activities by battalion
+exports.getActivitiesByBattalion = async (req, res) => {
+  try {
+    const { battalionId } = req.params;
+    const { date } = req.query;
+
+    const whereClause = { battalionId };
+    
+    // If date is provided, filter activities based on type
+    if (date) {
+      whereClause[Op.or] = [
+        { activityType: 'daily' },
+        {
+          activityType: 'custom',
+          startDate: { [Op.lte]: date },
+          endDate: { [Op.gte]: date }
+        }
+      ];
+    }
+
+    const activities = await DailyActivity.findAll({
+      where: whereClause,
+      include: [{
+        model: Battalion,
+        as: 'battalion'
+      }, {
+        model: CadetActivityAttendance,
+        as: 'attendances',
+        include: [{
+          model: Cadet,
+          as: 'cadet'
+        }]
+      }],
+      order: [['createdAt', 'DESC']]
+    });
+
+    // Add attendance statistics
+    const activitiesWithStats = activities.map(activity => {
+      const totalCadets = activity.attendances.length;
+      const presentCount = activity.attendances.filter(a => a.status === 'Present').length;
+      const absentCount = activity.attendances.filter(a => a.status === 'Absent').length;
+
+      return {
+        ...activity.toJSON(),
+        stats: {
+          totalCadets,
+          presentCount,
+          absentCount,
+          attendancePercentage: totalCadets > 0 ? (presentCount / totalCadets) * 100 : 0
+        }
+      };
+    });
+
+    res.status(200).json({ 
+      data: activitiesWithStats,
+      total: activitiesWithStats.length
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
 }; 

@@ -8,6 +8,9 @@ router.post('/', dailyActivityController.createActivity);
 // Get all activities
 router.get('/', dailyActivityController.getAllActivities);
 
+// Get activities by battalion
+router.get('/battalion/:battalionId', dailyActivityController.getActivitiesByBattalion);
+
 // Get activity by ID with attendance details
 router.get('/:id', dailyActivityController.getActivityById);
 
