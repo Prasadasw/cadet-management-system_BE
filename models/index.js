@@ -27,10 +27,24 @@ fs
     );
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    // Dynamically import each model file
+    const modelModule = require(path.join(__dirname, file));
+    
+    // Initialize models 
+    let model;
+    if (typeof modelModule === 'function') {
+      model = modelModule(sequelize, Sequelize.DataTypes);
+    } else if (modelModule.init && typeof modelModule.init === 'function') {
+      model = modelModule.init(sequelize, Sequelize.DataTypes);
+    } else {
+      model = modelModule;
+    }
+    
+    // Add the model to the db object using the model's name as key
     db[model.name] = model;
   });
 
+// Set up associations after all models are loaded
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
