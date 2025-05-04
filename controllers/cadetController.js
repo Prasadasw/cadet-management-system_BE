@@ -1,4 +1,4 @@
-const { Cadet } = require('../models');
+const { Cadet, Parent } = require('../models');
 
 exports.createCadet = async (req, res) => {
   try {
@@ -47,6 +47,7 @@ exports.createCadet = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
+  
 };
 
 exports.updateCadet = async (req, res) => {
@@ -159,5 +160,35 @@ exports.getCadetsByBattalion = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+
+exports.createCadet = async (req, res) => {
+  try {
+    const { ...cadetData } = req.body;
+
+    // Create cadet
+    const cadet = await Cadet.create(cadetData);
+
+    // Automatically create parent record
+    const parent = await Parent.create({
+      email: req.body.emailId, // Use cadet's email
+      cadetId: cadet.id,
+      fullName: req.body.parentsDetails || 'Unknown Parent',
+      contactNumber: req.body.parentContactNumber || 'N/A'
+    });
+
+    res.status(201).json({
+      cadet: cadet,
+      parent: parent
+    });
+
+  } catch (error) {
+    console.error('Create Cadet Error:', error);
+    res.status(500).json({ 
+      message: 'Error creating cadet and parent',
+      error: error.message 
+    });
   }
 };

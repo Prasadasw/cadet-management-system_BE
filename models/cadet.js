@@ -1,10 +1,28 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Cadet = sequelize.define('Cadet', {
-    fullName: DataTypes.STRING,
-    chestNumber: DataTypes.STRING,
-    battalionId: DataTypes.INTEGER,
-    hostelId: DataTypes.INTEGER,
+    fullName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    chestNumber: {
+      type: DataTypes.STRING,
+      unique: true
+    },
+    battalionId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Battalions',
+        key: 'id'
+      }
+    },
+    hostelId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Hostels',
+        key: 'id'
+      }
+    },
     roomNumber: DataTypes.STRING,
     age: DataTypes.INTEGER,
     address: DataTypes.STRING,
@@ -12,7 +30,13 @@ module.exports = (sequelize, DataTypes) => {
     parentsDetails: DataTypes.STRING,
     parentContactNumber: DataTypes.STRING,
     relationship: DataTypes.STRING,
-    emailId: DataTypes.STRING,
+    emailId: {
+      type: DataTypes.STRING,
+      unique: true,
+      validate: {
+        isEmail: true
+      }
+    },
     mobileSubmitted: DataTypes.BOOLEAN,
     initialPoints: DataTypes.INTEGER,
     batchYear: {
@@ -23,16 +47,29 @@ module.exports = (sequelize, DataTypes) => {
         max: new Date().getFullYear() + 1
       }
     }
-  }, {});
+  }, {
+    tableName: 'Cadets',
+    timestamps: true
+  });
   
   Cadet.associate = function(models) {
     Cadet.belongsTo(models.Battalion, {
       foreignKey: 'battalionId',
-      as: 'battalion'
+      as: 'battalion',
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE'
     });
     Cadet.hasMany(models.CadetPoint, {
       foreignKey: 'cadetId',
-      as: 'points'
+      as: 'points',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
+    });
+    Cadet.hasOne(models.Parent, {
+      foreignKey: 'cadetId',
+      as: 'parent',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     });
   };
 

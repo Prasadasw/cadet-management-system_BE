@@ -1,6 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { check } = require('express-validator'); // <-- Import check here
 const cadetController = require('../controllers/cadetController');
+
+router.post(
+  '/',
+  [
+    check('parentEmail').isEmail().withMessage('Valid parent email required'),
+    check('parentFullName').notEmpty(),
+    check('parentContactNumber').isMobilePhone(),
+  ],
+  cadetController.createCadet
+);
 
 // Create cadet
 router.post('/create', cadetController.createCadet);

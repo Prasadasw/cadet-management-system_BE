@@ -8,4 +8,13 @@ router.get('/', battalionController.getAllBattalions);
 // Get battalion by ID with cadets and stats
 router.get('/:id', battalionController.getBattalionById);
 
-module.exports = router; 
+// Create a new battalion
+router.post('/', battalionController.createBattalion);
+
+// Update an existing battalion
+router.put('/:id', battalionController.updateBattalion);
+
+// Delete a battalion
+router.delete('/:id', battalionController.deleteBattalion);
+
+module.exports = router;
