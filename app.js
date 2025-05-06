@@ -19,6 +19,7 @@ const dailyActivityRoutes = require('./routes/dailyActivityRoutes');
 const hostelRoutes = require('./routes/hostelRoutes');
 const parentAuthRoutes = require('./routes/parentAuthRoutes');
 const parentRoutes = require('./routes/parentRoutes');
+const outpassRoutes = require('./routes/outpassRoutes');
 
 const sequelize = require('./config/database');
 const models = require('./models');
@@ -41,6 +42,7 @@ app.use('/api/activities', dailyActivityRoutes);
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/parent', parentAuthRoutes);
+app.use('/api/outpass', outpassRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -7,6 +7,7 @@ exports.getAllBattalions = async (req, res) => {
       include: [{
         model: Cadet,
         as: 'cadets',
+        attributes: ['id', 'fullName', 'registrationNumber', 'batchYear'],
         include: [{
           model: CadetPoint,
           as: 'points'
@@ -52,6 +53,7 @@ exports.getBattalionById = async (req, res) => {
       include: [{
         model: Cadet,
         as: 'cadets',
+        attributes: ['id', 'fullName', 'registrationNumber', 'batchYear'],
         include: [{
           model: CadetPoint,
           as: 'points'
@@ -97,3 +99,84 @@ exports.getBattalionById = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 }; 
+
+// Create a new battalion
+exports.createBattalion = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: 'Battalion name is required' });
+    }
+
+    const existingBattalion = await Battalion.findOne({ where: { name } });
+    if (existingBattalion) {
+      return res.status(409).json({ message: 'Battalion with this name already exists' });
+    }
+
+    const newBattalion = await Battalion.create({ name });
+    res.status(201).json({ message: 'Battalion created successfully', data: newBattalion });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+// Update an existing battalion
+exports.updateBattalion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: 'Battalion name is required' });
+    }
+
+    const battalion = await Battalion.findByPk(id);
+    if (!battalion) {
+      return res.status(404).json({ message: 'Battalion not found' });
+    }
+
+    const existingBattalion = await Battalion.findOne({ 
+      where: { 
+        name, 
+        id: { [Op.ne]: id } 
+      } 
+    });
+    if (existingBattalion) {
+      return res.status(409).json({ message: 'Battalion with this name already exists' });
+    }
+
+    battalion.name = name;
+    await battalion.save();
+
+    res.status(200).json({ message: 'Battalion updated successfully', data: battalion });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+// Delete a battalion
+exports.deleteBattalion = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const battalion = await Battalion.findByPk(id);
+    if (!battalion) {
+      return res.status(404).json({ message: 'Battalion not found' });
+    }
+
+    // Check if battalion has any cadets before deleting
+    const cadetCount = await Cadet.count({ where: { battalionId: id } });
+    if (cadetCount > 0) {
+      return res.status(400).json({ message: 'Cannot delete battalion with active cadets' });
+    }
+
+    await battalion.destroy();
+    res.status(200).json({ message: 'Battalion deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};

@@ -30,14 +30,38 @@ fs
     // Dynamically import each model file
     const modelModule = require(path.join(__dirname, file));
     
+    console.log(`Processing model file: ${file}`);
+    console.log(`Module type: ${typeof modelModule}`);
+    console.log(`Module keys: ${Object.keys(modelModule)}`);
+    
     // Initialize models 
     let model;
-    if (typeof modelModule === 'function') {
-      model = modelModule(sequelize, Sequelize.DataTypes);
-    } else if (modelModule.init && typeof modelModule.init === 'function') {
-      model = modelModule.init(sequelize, Sequelize.DataTypes);
-    } else {
-      model = modelModule;
+    try {
+      if (typeof modelModule === 'function') {
+        // If it's a function that returns a model (old style)
+        console.log(`Initializing model from function: ${file}`);
+        model = modelModule(sequelize, Sequelize.DataTypes);
+      } else if (modelModule.init && typeof modelModule.init === 'function') {
+        // If it has an init method (Sequelize v5+)
+        console.log(`Initializing model with init method: ${file}`);
+        model = modelModule.init(sequelize, Sequelize.DataTypes);
+      } else if (typeof modelModule === 'object' && modelModule.default) {
+        // Handle ES module exports
+        console.log(`Initializing model from default export: ${file}`);
+        model = modelModule.default(sequelize, Sequelize.DataTypes);
+      } else if (typeof modelModule === 'object') {
+        // Directly exported model object
+        console.log(`Using model object directly: ${file}`);
+        model = modelModule;
+      } else {
+        console.warn(`Unable to initialize model from file: ${file}`);
+        return;
+      }
+      
+      console.log(`Successfully initialized model from: ${file}`);
+    } catch (error) {
+      console.error(`Error initializing model from ${file}:`, error);
+      return;
     }
     
     // Add the model to the db object using the model's name as key

@@ -37,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE'
     });
+
+    Parent.hasMany(models.OutpassRequest, {
+      foreignKey: 'parentId',
+      as: 'outpassRequests',
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE'
+    });
   };
 
   return Parent;

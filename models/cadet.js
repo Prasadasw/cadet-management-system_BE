@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
         isEmail: true
       }
     },
+    registrationNumber: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
     mobileSubmitted: DataTypes.BOOLEAN,
     initialPoints: DataTypes.INTEGER,
     batchYear: {
@@ -46,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
         min: 2000,
         max: new Date().getFullYear() + 1
       }
+    },
+    registrationNumber: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      defaultValue: 'REG-UNASSIGNED'
     }
   }, {
     tableName: 'Cadets',
