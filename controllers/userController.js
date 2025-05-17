@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, roleId } = req.body;
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -26,12 +26,12 @@ exports.register = async (req, res) => {
       name,
       email,
       password,
-      role: role || 'Staff' // Default to Staff if role not specified
+      roleId: roleId || 2 // Default to roleId 2 (Staff) if not specified
     });
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, roleId: user.roleId },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roleId: user.roleId,
         token
       }
     });
@@ -85,7 +85,7 @@ exports.login = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, roleId: user.roleId },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
@@ -96,7 +96,7 @@ exports.login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roleId: user.roleId,
         token
       }
     });

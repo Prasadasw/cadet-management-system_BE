@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Battalions', {
+    await queryInterface.createTable('battalions', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -27,7 +27,7 @@ module.exports = {
     });
 
     // Seed the 4 battalions
-    await queryInterface.bulkInsert('Battalions', [
+    await queryInterface.bulkInsert('battalions', [
       { name: 'Shaurya', createdAt: new Date(), updatedAt: new Date() },
       { name: 'Shakti', createdAt: new Date(), updatedAt: new Date() },
       { name: 'Agnibaaz', createdAt: new Date(), updatedAt: new Date() },
@@ -36,6 +36,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Battalions');
+    await queryInterface.dropTable('battalions');
   }
 }; 

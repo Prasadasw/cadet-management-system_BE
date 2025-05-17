@@ -1,25 +1,26 @@
 {
   
-    "development": {
-      "username": "root",
-      "password": "root",
-      "database": "cadet_management",
-      "host": "127.0.0.1",
-      "dialect": "mysql"
-    },
-  
-  "test": {
+  "development": {
     "username": "root",
-    "password": null,
-    "database": "database_test",
+    "password": "root",
+    "database": "cadet_management",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  }
+
+"test": {
+  "username": "root",
+  "password": null,
+  "database": "database_test",
+  "host": "127.0.0.1",
+  "dialect": "mysql"
+},
+"production": {
+  "username": "cadet_user",
+  "password": "secure_password",
+  "database": "cadet_management",
+  "host": "127.0.0.1",
+  "dialect": "mysql"
+}
+
 }

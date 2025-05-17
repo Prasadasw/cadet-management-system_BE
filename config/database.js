@@ -1,49 +1,60 @@
+
+// const { Sequelize } = require('sequelize');
+// const env = process.env.NODE_ENV || 'development';
+// const config = require('./config.json')[env];
+
+// const sequelize = new Sequelize(
+//   config.database,
+//   config.username,
+//   config.password,
+//   {
+//     host: config.host,
+//     port: config.port,
+//     dialect: config.dialect,
+//     logging: console.log,
+//     dialectOptions: {
+//       ssl: config.dialectOptions?.ssl || false,
+//       connectTimeout: 10000
+//     }
+//   }
+// );
+
+// sequelize.authenticate()
+//   .then(() => console.log('✅ DB connected'))
+//   .catch((err) => console.error('❌ DB connection error:', err));
+
+// module.exports = sequelize;
+
+require('dotenv').config();
 const { Sequelize } = require('sequelize');
+
 const env = process.env.NODE_ENV || 'development';
+
+// Try to load config from config.json
 const config = require('./config.json')[env];
 
-// Enhanced logging function
-const customLogger = (msg) => {
-  console.log(`[Sequelize] ${msg}`);
-};
+// Use environment variables if set, otherwise fallback to config.json
+const username = process.env.DB_USERNAME || config.username;
+const password = process.env.DB_PASSWORD || config.password;
+const database = process.env.DB_NAME || config.database;
+const host = process.env.DB_HOST || config.host;
+const dialect = process.env.DB_DIALECT || config.dialect;
+const port = process.env.DB_PORT || config.port || 3306;
 
-const sequelize = new Sequelize(
-  config.database, 
-  config.username, 
-  config.password, 
-  {
-    host: config.host,
-    dialect: config.dialect,
-    logging: customLogger,
-    pool: {
-      max: 5,        // Maximum number of connection in pool
-      min: 0,        // Minimum number of connection in pool
-      acquire: 30000, // The maximum time, in milliseconds, that pool will try to get connection before throwing error
-      idle: 10000    // The maximum time, in milliseconds, that a connection can be idle before being released
-    },
-    define: {
-      timestamps: true,
-      underscored: true,  // Use snake_case for automatically added attributes
-      freezeTableName: true  // Prevent sequelize from pluralizing table names
-    },
-    dialectOptions: {
-      // Additional MySQL-specific options
-      connectTimeout: 10000  // Connection timeout in milliseconds
-    }
-  }
-);
+const sequelize = new Sequelize(database, username, password, {
+  host,
+  port,
+  dialect,
+  logging: console.log,
+  dialectOptions: {
+    ssl: config.dialectOptions?.ssl || false,
+    connectTimeout: 10000,
+  },
+});
 
-// Test database connection
-const testConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Database connection has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  }
-};
-
-// Call connection test
-testConnection();
+sequelize
+  .authenticate()
+  .then(() => console.log('✅ DB connected'))
+  .catch((err) => console.error('❌ DB connection error:', err));
 
 module.exports = sequelize;

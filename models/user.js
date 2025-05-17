@@ -21,10 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    role: {
-      type: DataTypes.ENUM('Admin', 'Staff', 'Parent', 'HR'),
+    roleId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 'Staff'
+      defaultValue: 2 // Assuming 2 is for Staff role
     }
   }, {
     hooks: {
