@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('Cadets', 'batchYear', {
+    await queryInterface.addColumn('cadets', 'batchYear', {
       type: Sequelize.INTEGER,
       allowNull: false,
       defaultValue: new Date().getFullYear()
@@ -10,6 +10,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeColumn('Cadets', 'batchYear');
+    await queryInterface.removeColumn('cadets', 'batchYear');
   }
 }; 
