@@ -15,12 +15,13 @@
   "host": "127.0.0.1",
   "dialect": "mysql"
 },
-"production": {
-  "username": "cadet_user",
-  "password": "secure_password",
+"production":{
+  "username": "cadet_app",
+  "password": "strongpassword", 
   "database": "cadet_management",
-  "host": "127.0.0.1",
+  "host": "localhost",
   "dialect": "mysql"
 }
+
 
 }

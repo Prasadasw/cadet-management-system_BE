@@ -29,16 +29,14 @@ require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
 const env = process.env.NODE_ENV || 'development';
-
-// Try to load config from config.json
 const config = require('./config.json')[env];
 
-// Use environment variables if set, otherwise fallback to config.json
-const username = process.env.DB_USERNAME || config.username;
+// Use these correct variable names from .env
+const username = process.env.DB_USER || config.username;
 const password = process.env.DB_PASSWORD || config.password;
 const database = process.env.DB_NAME || config.database;
 const host = process.env.DB_HOST || config.host;
-const dialect = process.env.DB_DIALECT || config.dialect;
+const dialect = process.env.DB_DIALECT || config.dialect || 'mysql';
 const port = process.env.DB_PORT || config.port || 3306;
 
 const sequelize = new Sequelize(database, username, password, {
