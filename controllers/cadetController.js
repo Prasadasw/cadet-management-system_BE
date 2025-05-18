@@ -1,5 +1,65 @@
 const { Cadet, Parent } = require("../models");
 
+// exports.createCadet = async (req, res) => {
+//   try {
+//     const {
+//       fullName,
+//       chestNumber,
+//       battalionId,
+//       hostelId,
+//       roomNumber,
+//       age,
+//       address,
+//       schoolDetails,
+//       parentsDetails,
+//       parentContactNumber,
+//       relationship,
+//       emailId,
+//       mobileSubmitted,
+//       batchYear,
+//       collegeName, 
+//       alternateMobileNumber, 
+//       remark,
+//     } = req.body;
+
+//     const existingCadet = await Cadet.findOne({ where: { chestNumber } });
+//     if (existingCadet) {
+//       return res
+//         .status(400)
+//         .json({ message: "Cadet with this chest number already exists" });
+//     }
+
+//     const newCadet = await Cadet.create({
+//       fullName,
+//       chestNumber,
+//       battalionId,
+//       hostelId,
+//       roomNumber,
+//       age,
+//       address,
+//       schoolDetails,
+//       parentsDetails,
+//       parentContactNumber,
+//       relationship,
+//       emailId,
+//       mobileSubmitted,
+//       batchYear,
+//       collegeName,              // NEW
+//       alternateMobileNumber,    // NEW
+//       remark, 
+//       initialPoints: 0,
+//     });
+
+//     res
+//       .status(201)
+//       .json({ message: "Cadet created successfully", data: newCadet });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server Error", error: error.message });
+//   }
+// };
+
+
 exports.createCadet = async (req, res) => {
   try {
     const {
@@ -17,18 +77,20 @@ exports.createCadet = async (req, res) => {
       emailId,
       mobileSubmitted,
       batchYear,
-      collegeName, // NEW
-      alternateMobileNumber, // NEW
+      collegeName,
+      alternateMobileNumber,
       remark,
     } = req.body;
 
+    // Check for existing cadet
     const existingCadet = await Cadet.findOne({ where: { chestNumber } });
     if (existingCadet) {
-      return res
-        .status(400)
-        .json({ message: "Cadet with this chest number already exists" });
+      return res.status(400).json({
+        message: "Cadet with this chest number already exists",
+      });
     }
 
+    // Create cadet
     const newCadet = await Cadet.create({
       fullName,
       chestNumber,
@@ -44,18 +106,31 @@ exports.createCadet = async (req, res) => {
       emailId,
       mobileSubmitted,
       batchYear,
-      collegeName,              // NEW
-      alternateMobileNumber,    // NEW
-      remark, 
+      collegeName,
+      alternateMobileNumber,
+      remark,
       initialPoints: 0,
     });
 
-    res
-      .status(201)
-      .json({ message: "Cadet created successfully", data: newCadet });
+    // Create parent
+    const parent = await Parent.create({
+      email: emailId,
+      cadetId: newCadet.id,
+      fullName: parentsDetails || "Unknown Parent",
+      contactNumber: parentContactNumber || "N/A",
+    });
+
+    res.status(201).json({
+      message: "Cadet and parent created successfully",
+      cadet: newCadet,
+      parent: parent,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Create Cadet Error:", error);
+    res.status(500).json({
+      message: "Error creating cadet and parent",
+      error: error.message,
+    });
   }
 };
 
