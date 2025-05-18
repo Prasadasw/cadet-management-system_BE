@@ -57,7 +57,20 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       allowNull: false,
       defaultValue: 'REG-UNASSIGNED'
-    }
+    },
+    collegeName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    alternateMobileNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    remark: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    
   }, {
     tableName: 'cadets',
     timestamps: true

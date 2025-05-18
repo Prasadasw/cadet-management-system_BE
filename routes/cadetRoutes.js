@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { check } = require('express-validator'); // <-- Import check here
+const { check } = require('express-validator'); 
 const cadetController = require('../controllers/cadetController');
 
 router.post(
