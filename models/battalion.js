@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const Battalion = sequelize.define('Battalion', {
+  const Battalion = sequelize.define('battalion', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
 
   Battalion.associate = function(models) {
-    Battalion.hasMany(models.Cadet, {
+    Battalion.hasMany(models.cadet, {
       foreignKey: 'battalionId',
       as: 'cadets'
     });
