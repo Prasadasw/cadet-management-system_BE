@@ -12,14 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     battalionId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Battalions',
+        model: 'battalions',
         key: 'id'
       }
     },
     hostelId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Hostels',
+        model: 'hostels',
         key: 'id'
       }
     },
@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'REG-UNASSIGNED'
     }
   }, {
-    tableName: 'Cadets',
+    tableName: 'cadets',
     timestamps: true
   });
   
