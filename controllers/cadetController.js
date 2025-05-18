@@ -104,6 +104,7 @@ exports.createCadet = async (req, res) => {
       parentContactNumber,
       relationship,
       emailId,
+      registrationNumber: 'REG-UNASSIGNED',
       mobileSubmitted,
       batchYear,
       collegeName,
