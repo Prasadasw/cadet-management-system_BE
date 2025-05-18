@@ -80,6 +80,7 @@ exports.createCadet = async (req, res) => {
       collegeName,
       alternateMobileNumber,
       remark,
+      registrationNumber,
     } = req.body;
 
     // Check for existing cadet
@@ -104,7 +105,7 @@ exports.createCadet = async (req, res) => {
       parentContactNumber,
       relationship,
       emailId,
-      registrationNumber: 'REG-UNASSIGNED',
+      registrationNumber,
       mobileSubmitted,
       batchYear,
       collegeName,
