@@ -22,6 +22,10 @@ router.get('/', cadetController.getAllCadets);
 // Get cadets by battalion
 router.get('/battalion/:battalionId', cadetController.getCadetsByBattalion);
 
+// Delete cadet by ID
+router.delete('/:id', cadetController.deleteCadet);
+
+
 // Get cadet by ID
 router.get('/:id', cadetController.getCadet);
 
