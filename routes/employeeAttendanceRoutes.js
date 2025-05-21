@@ -4,6 +4,7 @@ const attendanceController = require('../controllers/employeeAttendanceControlle
 
 router.post('/mark', attendanceController.addAttendance);
 
+// /api/employee-attendance/mark
 module.exports = router;
 
 

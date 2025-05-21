@@ -57,12 +57,12 @@ exports.updateEmployee = async (req, res) => {
     const { id } = req.params;
     const { firstName, lastName, email, mobileNumber, designation } = req.body;
 
-    const employee = await employee.findByPk(id);
-    if (!employee) return res.status(404).json({ message: 'Employee not found' });
+    const employees = await employee.findByPk(id);
+    if (!employees) return res.status(404).json({ message: 'Employee not found' });
 
-    await employee.update({ firstName, lastName, email, mobileNumber, designation });
+    await employees.update({ firstName, lastName, email, mobileNumber, designation });
 
-    res.status(200).json({ message: 'Employee updated successfully', data: employee });
+    res.status(200).json({ message: 'Employee updated successfully', data: employees });
   } catch (err) {
     console.error('Update Error:', err);
     res.status(500).json({ message: 'Internal server error' });
@@ -72,10 +72,10 @@ exports.updateEmployee = async (req, res) => {
 // Delete
 exports.deleteEmployee = async (req, res) => {
   try {
-    const employee = await employee.findByPk(req.params.id);
-    if (!employee) return res.status(404).json({ message: 'Employee not found' });
+    const employees = await employee.findByPk(req.params.id);
+    if (!employees) return res.status(404).json({ message: 'Employee not found' });
 
-    await employee.destroy();
+    await employees.destroy();
 
     res.status(200).json({ message: 'Employee deleted successfully' });
   } catch (err) {
