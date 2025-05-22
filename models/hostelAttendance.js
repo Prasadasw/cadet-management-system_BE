@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Cadets',
+        model: 'cadets',
         key: 'id'
       }
     },
@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     timestamps: true,
+    tableName: 'hostel_attendances',
     indexes: [
       {
         unique: true,
