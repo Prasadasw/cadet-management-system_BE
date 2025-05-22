@@ -18,11 +18,20 @@ router.post('/rooms/allocate', hostelController.allocateCadetToRoom);
 // Issue an item to a cadet
 router.post('/items/issue', hostelController.issueItemToCadet);
 
+// Get all issued items
+router.get('/items/issue', hostelController.getIssuedItems);
+
 // Mark hostel attendance
 router.post('/attendance/mark', hostelController.markHostelAttendance);
 
-// Generate hostel reports
+// Get attendance report
+router.get('/attendance/report', hostelController.generateReports);
+
+// Generate hostel reports (deprecated, kept for backward compatibility)
 router.get('/reports', hostelController.generateReports);
+
+// Get all cadets in a specific hostel
+router.get('/:hostelId/cadets', hostelController.getCadetsByHostel);
 
 // Get rooms for a specific hostel
 router.get('/:hostelId/rooms', hostelController.getRoomsByHostel);

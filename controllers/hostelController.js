@@ -1,6 +1,82 @@
 const db = require('../models');
 const { Op } = require('sequelize');
 
+// Get all cadets in a specific hostel
+exports.getCadetsByHostel = async (req, res) => {
+  try {
+    const { hostelId } = req.params;
+    
+    if (!hostelId) {
+      return res.status(400).json({ error: 'Hostel ID is required' });
+    }
+
+    const allocations = await db.HostelCadetAllocation.findAll({
+      where: { 
+        hostelId,
+        releaseDate: null // Only get current allocations
+      },
+      include: [
+        {
+          model: db.Cadet,
+          as: 'cadet',
+          attributes: ['id', 'fullName', 'registrationNumber', 'chestNumber', 'batchYear', 'emailId']
+        },
+        {
+          model: db.Room,
+          as: 'room',
+          attributes: ['id', 'roomNumber']
+        }
+      ],
+      order: [
+        [{ model: db.Room, as: 'room' }, 'roomNumber', 'ASC'],
+        [{ model: db.Cadet, as: 'cadet' }, 'fullName', 'ASC']
+      ]
+    });
+
+    // Transform the data to a cleaner format
+    const cadets = allocations.map(allocation => ({
+      id: allocation.cadet.id,
+      fullName: allocation.cadet.fullName,
+      registrationNumber: allocation.cadet.registrationNumber,
+      chestNumber: allocation.cadet.chestNumber,
+      batchYear: allocation.cadet.batchYear,
+      email: allocation.cadet.emailId,
+      roomNumber: allocation.room ? allocation.room.roomNumber : null,
+      allocationDate: allocation.allocationDate
+    }));
+
+    res.json(cadets);
+  } catch (error) {
+    console.error('Error fetching cadets by hostel:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch cadets', 
+      details: error.message 
+    });
+  }
+};
+
+// Get all issued items
+exports.getIssuedItems = async (req, res) => {
+  try {
+    const issuedItems = await db.HostelItemIssue.findAll({
+      include: [
+        {
+          model: db.Cadet,
+          as: 'cadet',
+          attributes: ['id', 'fullName', 'registrationNumber', 'chestNumber']
+        }
+      ],
+      attributes: ['id', 'itemName', 'issueDate'],
+      order: [['issueDate', 'DESC']]
+    });
+    
+    res.json(issuedItems);
+  } catch (error) {
+    console.error('Error fetching issued items:', error);
+    res.status(500).json({ error: 'Failed to fetch issued items', details: error.message });
+  }
+};
+
 exports.createHostel = async (req, res) => {
   try {
     const { name, description } = req.body;
