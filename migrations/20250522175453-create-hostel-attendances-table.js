@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Cadets', // This should match the actual table name in your database
+          model: 'cadets', // This should match the actual table name in your database
           key: 'id'
         },
         onUpdate: 'CASCADE',

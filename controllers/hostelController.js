@@ -201,14 +201,19 @@ exports.markHostelAttendance = async (req, res) => {
 
 exports.generateReports = async (req, res) => {
   try {
-    const { reportType, startDate, endDate } = req.query;
+    const { reportType = 'attendance_logs', startDate, endDate } = req.query;
+    
+    // If no dates provided, default to today
+    const today = new Date().toISOString().split('T')[0];
+    const queryStartDate = startDate || today;
+    const queryEndDate = endDate || today;
     
     switch (reportType) {
       case 'room_allocations':
         const roomAllocations = await db.HostelCadetAllocation.findAll({
           where: {
             allocationDate: {
-              [Op.between]: [startDate, endDate]
+              [Op.between]: [queryStartDate, queryEndDate]
             }
           },
           include: [
@@ -224,7 +229,7 @@ exports.generateReports = async (req, res) => {
         const itemIssues = await db.HostelItemIssue.findAll({
           where: {
             issueDate: {
-              [Op.between]: [startDate, endDate]
+              [Op.between]: [queryStartDate, queryEndDate]
             }
           },
           include: [{ model: db.Cadet }]
@@ -236,7 +241,7 @@ exports.generateReports = async (req, res) => {
         const attendanceLogs = await db.HostelAttendance.findAll({
           where: {
             date: {
-              [Op.between]: [startDate, endDate]
+              [Op.between]: [queryStartDate, queryEndDate]
             }
           },
           include: [{ model: db.Cadet }]
