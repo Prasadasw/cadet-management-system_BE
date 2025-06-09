@@ -95,9 +95,9 @@ const loginAdmin = async (req, res) => {
 // Get admin details
 const getAdminDetails = async (req, res) => {
   try {
-    const admin = await Admin.findByPk(req.user.id, {
-      attributes: { exclude: ['password'] }
-    });
+    // The admin is already attached to the request object by the authenticateAdmin middleware
+    // and the password is already excluded there
+    const admin = req.admin;
 
     if (!admin) {
       return res.status(404).json({ message: 'Admin not found' });

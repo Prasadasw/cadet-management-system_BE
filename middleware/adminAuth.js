@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/admin');
+const db = require('../models');
+const Admin = db.Admin;
 
 // Middleware to authenticate admin using JWT
 exports.authenticateAdmin = async (req, res, next) => {
