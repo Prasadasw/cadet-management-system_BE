@@ -26,6 +26,7 @@ const employeeAttendanceRoutes = require('./routes/employeeAttendanceRoutes');
 const employeePointRoutes = require('./routes/employeePointRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const mobileSubmissionRoutes = require('./routes/mobileSubmissionRoutes');
+const cadetMobileSubmissionRoutes = require('./routes/cadetMobileSubmissionRoutes'); // Added new route
 
 const sequelize = require('./config/database');
 const models = require('./models');
@@ -55,6 +56,7 @@ app.use('/api/employee-attendance', employeeAttendanceRoutes);
 app.use('/api/employee-points', employeePointRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/mobile-submission', mobileSubmissionRoutes);
+app.use('/api/cadet-mobile-submission', cadetMobileSubmissionRoutes); // Added new route
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
