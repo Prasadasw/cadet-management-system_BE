@@ -78,4 +78,8 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+// Import and set up associations
+const setupAssociations = require('./associations');
+setupAssociations(sequelize);
+
 module.exports = db;
