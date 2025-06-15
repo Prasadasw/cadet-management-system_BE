@@ -65,7 +65,7 @@ app.use('/api/classrooms', classroomRoutes); // Added classroom routes
 app.use('/api/classrooms', classroomCadetRoutes); // Added classroom cadet routes
 app.use('/api/classroom-routines', classroomRoutineRoutes);
 app.use('/api/classroom-attendance', classroomRoutineAttendanceRoutes);
-
+//klas
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
