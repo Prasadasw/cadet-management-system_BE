@@ -1,4 +1,3 @@
-// migrations/YYYYMMDDHHMMSS-create-classroom-routine-attendance.js
 'use strict';
 
 module.exports = {
@@ -39,16 +38,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      markedById: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'users',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -56,6 +45,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {
+        type: Sequelize.DATE,
+        allowNull: true
       }
     });
 
@@ -70,7 +63,6 @@ module.exports = {
     await queryInterface.addIndex('classroom_routine_attendance', ['routineId']);
     await queryInterface.addIndex('classroom_routine_attendance', ['cadetId']);
     await queryInterface.addIndex('classroom_routine_attendance', ['status']);
-    await queryInterface.addIndex('classroom_routine_attendance', ['markedById']);
   },
 
   down: async (queryInterface, Sequelize) => {
