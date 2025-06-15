@@ -26,23 +26,25 @@ module.exports = (sequelize, DataTypes) => {
     remarks: {
       type: DataTypes.STRING,
       allowNull: true
-    },
-    markedById: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id'
-      }
     }
   }, {
     tableName: 'classroom_routine_attendance',
     timestamps: true,
+    paranoid: true,
     indexes: [
       {
         unique: true,
         fields: ['routineId', 'cadetId'],
         name: 'unique_routine_cadet'
+      },
+      {
+        fields: ['routineId']
+      },
+      {
+        fields: ['cadetId']
+      },
+      {
+        fields: ['status']
       }
     ]
   });
@@ -55,10 +57,6 @@ module.exports = (sequelize, DataTypes) => {
     ClassroomRoutineAttendance.belongsTo(models.Cadet, {
       foreignKey: 'cadetId',
       as: 'cadet'
-    });
-    ClassroomRoutineAttendance.belongsTo(models.User, {
-      foreignKey: 'markedById',
-      as: 'markedBy'
     });
   };
 

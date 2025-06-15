@@ -1,5 +1,5 @@
 // controllers/classroomRoutineAttendanceController.js
-const { ClassroomRoutineAttendance, ClassroomRoutine, Cadet, User, Classroom } = require('../models');
+const { ClassroomRoutineAttendance, ClassroomRoutine, Cadet, Classroom } = require('../models');
 const { Op } = require('sequelize');
 
 // Mark attendance for multiple cadets in a routine
@@ -8,7 +8,7 @@ exports.markAttendance = async (req, res) => {
   
   try {
     const { routineId } = req.params;
-    const { attendanceData, markedById } = req.body;
+    const { attendanceData } = req.body;
 
     // Validate routine exists
     const routine = await ClassroomRoutine.findByPk(routineId, {
@@ -23,16 +23,6 @@ exports.markAttendance = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: 'Routine not found'
-      });
-    }
-
-    // Validate user exists and has permission
-    const user = await User.findByPk(markedById);
-    if (!user) {
-      await transaction.rollback();
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid user'
       });
     }
 
@@ -58,8 +48,7 @@ exports.markAttendance = async (req, res) => {
         routineId,
         cadetId,
         status,
-        remarks,
-        markedById
+        remarks
       }, {
         transaction,
         returning: true
@@ -100,9 +89,14 @@ exports.getRoutineAttendance = async (req, res) => {
           attributes: ['id', 'fullName', 'registrationNumber']
         },
         {
-          model: User,
-          as: 'markedBy',
-          attributes: ['id', 'name', 'email']
+          model: ClassroomRoutine,
+          as: 'routine',
+          attributes: ['id', 'activity', 'date', 'startTime', 'endTime'],
+          include: [{
+            model: Classroom,
+            as: 'classroom',
+            attributes: ['id', 'className']
+          }]
         }
       ],
       order: [
@@ -139,30 +133,11 @@ exports.getAttendanceReport = async (req, res) => {
 
     const where = {};
     const routineWhere = {};
-    const include = [
-      {
-        model: ClassroomRoutine,
-        as: 'routine',
-        attributes: ['id', 'activity', 'date', 'startTime', 'endTime'],
-        include: [{
-          model: Classroom,
-          as: 'classroom',
-          attributes: ['id', 'className']
-        }]
-      },
-      {
-        model: Cadet,
-        as: 'cadet',
-        attributes: ['id', 'fullName', 'registrationNumber']
-      },
-      {
-        model: User,
-        as: 'markedBy',
-        attributes: ['id', 'name', 'email']
-      }
-    ];
 
-    // Apply filters
+    if (classroomId) {
+      routineWhere.classroomId = classroomId;
+    }
+
     if (startDate && endDate) {
       routineWhere.date = {
         [Op.between]: [startDate, endDate]
@@ -171,10 +146,6 @@ exports.getAttendanceReport = async (req, res) => {
       routineWhere.date = { [Op.gte]: startDate };
     } else if (endDate) {
       routineWhere.date = { [Op.lte]: endDate };
-    }
-
-    if (classroomId) {
-      routineWhere.classroomId = classroomId;
     }
 
     if (routineId) {
@@ -189,14 +160,26 @@ exports.getAttendanceReport = async (req, res) => {
       where.status = status;
     }
 
-    // Add routine where conditions to include
-    if (Object.keys(routineWhere).length > 0) {
-      include[0].where = routineWhere;
-    }
-
     const attendance = await ClassroomRoutineAttendance.findAll({
       where,
-      include,
+      include: [
+        {
+          model: ClassroomRoutine,
+          as: 'routine',
+          where: routineWhere,
+          required: true,
+          include: [{
+            model: Classroom,
+            as: 'classroom',
+            attributes: ['id', 'className']
+          }]
+        },
+        {
+          model: Cadet,
+          as: 'cadet',
+          attributes: ['id', 'fullName', 'registrationNumber']
+        }
+      ],
       order: [
         [{ model: ClassroomRoutine, as: 'routine' }, 'date', 'DESC'],
         [{ model: ClassroomRoutine, as: 'routine' }, 'startTime', 'ASC'],
@@ -243,7 +226,8 @@ exports.getAttendanceSummary = async (req, res) => {
         model: ClassroomRoutine,
         as: 'routine',
         where: routineWhere,
-        attributes: ['id']
+        required: true,
+        attributes: []
       }]
     });
 
