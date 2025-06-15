@@ -30,6 +30,7 @@ const cadetMobileSubmissionRoutes = require('./routes/cadetMobileSubmissionRoute
 const classroomRoutes = require('./routes/classroomRoutes'); // Added classroom routes
 const classroomCadetRoutes = require('./routes/classroomCadetRoutes'); // Added classroom cadet routes
 const classroomRoutineRoutes = require('./routes/classroomRoutineRoutes');
+const classroomRoutineAttendanceRoutes = require('./routes/classroomRoutineAttendanceRoutes');
 
 const sequelize = require('./config/database');
 const models = require('./models');
@@ -63,6 +64,7 @@ app.use('/api/cadet-mobile-submission', cadetMobileSubmissionRoutes); // Added n
 app.use('/api/classrooms', classroomRoutes); // Added classroom routes
 app.use('/api/classrooms', classroomCadetRoutes); // Added classroom cadet routes
 app.use('/api/classroom-routines', classroomRoutineRoutes);
+app.use('/api/classroom-attendance', classroomRoutineAttendanceRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
