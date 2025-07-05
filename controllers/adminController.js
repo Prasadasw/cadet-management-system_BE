@@ -13,7 +13,7 @@ const registerAdmin = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, mobileNumber, password } = req.body;
+    const { name, mobileNumber, password, role } = req.body;
 
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ where: { mobileNumber } });
@@ -21,12 +21,12 @@ const registerAdmin = async (req, res) => {
       return res.status(400).json({ message: 'Admin with this mobile number already exists' });
     }
 
-    // Create admin
+    // Create admin with the specified role
     const admin = await Admin.create({
       name,
       mobileNumber,
       password,
-      role: 'admin'
+      role: role || 'admin' // Default to 'admin' if role is not provided
     });
 
     // Generate JWT token
@@ -113,8 +113,113 @@ const getAdminDetails = async (req, res) => {
   }
 };
 
+// Get all admins (only for superadmin)
+const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.findAll({
+      attributes: { exclude: ['password'] }, // Don't return passwords
+      order: [['createdAt', 'DESC']]
+    });
+    
+    res.json({
+      message: 'Admins retrieved successfully',
+      data: admins
+    });
+  } catch (error) {
+    console.error('Error in getAllAdmins:', error);
+    res.status(500).json({ message: 'Error retrieving admins', error: error.message });
+  }
+};
+
+// Update admin (only for superadmin)
+const updateAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, mobileNumber, role, password } = req.body;
+
+    const admin = await Admin.findByPk(id);
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    // Update fields if provided
+    if (name) admin.name = name;
+    if (mobileNumber) admin.mobileNumber = mobileNumber;
+    if (role) admin.role = role;
+    if (password) admin.password = password; // Password will be hashed by the model hook
+
+    await admin.save();
+
+    // Remove password from response
+    const adminData = admin.get();
+    delete adminData.password;
+
+    res.json({
+      message: 'Admin updated successfully',
+      data: adminData
+    });
+  } catch (error) {
+    console.error('Error in updateAdmin:', error);
+    res.status(500).json({ message: 'Error updating admin', error: error.message });
+  }
+};
+
+// Delete admin (only for superadmin)
+const deleteAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Prevent deleting self
+    if (req.admin.id === id) {
+      return res.status(400).json({ message: 'Cannot delete your own account' });
+    }
+
+    const result = await Admin.destroy({ where: { id } });
+    
+    if (!result) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    res.json({
+      message: 'Admin deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error in deleteAdmin:', error);
+    res.status(500).json({ message: 'Error deleting admin', error: error.message });
+  }
+};
+
+// Change password (for any admin to change their own password)
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const admin = await Admin.findByPk(req.admin.id);
+
+    // Verify current password
+    const isPasswordValid = await admin.validatePassword(currentPassword);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Update to new password
+    admin.password = newPassword;
+    await admin.save();
+
+    res.json({
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('Error in changePassword:', error);
+    res.status(500).json({ message: 'Error changing password', error: error.message });
+  }
+};
+
 module.exports = {
   registerAdmin,
   loginAdmin,
-  getAdminDetails
+  getAdminDetails,
+  getAllAdmins,
+  updateAdmin,
+  deleteAdmin,
+  changePassword
 };
