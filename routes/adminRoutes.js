@@ -12,7 +12,7 @@ const validateRegistration = [
   check('name', 'Name is required').notEmpty(),
   check('mobileNumber', 'Please include a valid 10-digit mobile number').isMobilePhone('en-IN'),
   check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
-  check('role', 'Invalid role. Must be one of: superadmin, admin, moderator, hostel manager, battalion incharge, attendance incharge, receptionist')
+  check('role', 'Invalid role. Must be one of: superadmin, admin, moderator, hostel incharge, battalion incharge, attendance incharge, receptionist')
     .isIn([
       'superadmin',
       'admin',
@@ -61,7 +61,7 @@ router.get('/me', authenticateAdmin, adminController.getAdminDetails);
 // @route   GET /api/admin/all
 // @desc    Get all admins (superadmin and admin only)
 // @access  Private (superadmin and admin only)
-router.get('/all', authenticateAdmin, checkRole(['superadmin', 'admin']), adminController.getAllAdmins);
+router.get('/all', adminController.getAllAdmins);
 
 // @route   PUT /api/admin/:id
 // @desc    Update admin details (superadmin and admin only)

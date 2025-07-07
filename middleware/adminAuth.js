@@ -25,8 +25,9 @@ exports.authenticateAdmin = async (req, res, next) => {
       return res.status(401).json({ message: 'Admin not found' });
     }
 
-    // Check if the token is for an admin
-    if (admin.role !== 'admin') {
+    // Check if the token is for an admin or superadmin
+    const allowedRoles = ['admin', 'superadmin'];
+    if (!allowedRoles.includes(admin.role)) {
       return res.status(403).json({ message: 'Access denied. Admins only.' });
     }
 
