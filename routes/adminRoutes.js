@@ -20,7 +20,8 @@ const validateRegistration = [
       'hostel incharge',
       'battalion incharge',
       'attendance incharge',
-      'receptionist'
+      'receptionist',
+      'hr incharge'
     ])
 ];
 
@@ -73,7 +74,7 @@ router.put('/:id',
     check('name', 'Name is required').optional().notEmpty(),
     check('mobileNumber', 'Please include a valid 10-digit mobile number').optional().isMobilePhone('en-IN'),
     check('role', 'Invalid role').optional().isIn([
-      'superadmin', 'admin', 'moderator', 'hostel incharge', 
+      'superadmin', 'admin', 'moderator', 'hostel incharge', 'hr incharge',
       'battalion incharge', 'attendance incharge', 'receptionist'
     ])
   ],
